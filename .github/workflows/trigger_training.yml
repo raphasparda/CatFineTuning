@@ -1,0 +1,66 @@
+name: Trigger Fine-Tuning Pipeline
+
+on:
+  push:
+    paths:
+      - 'data/**'
+      - 'configs/**'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Configuration file path'
+        required: false
+        default: 'configs/training_config.yaml'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display trigger info
+        run: |
+          echo "============================================"
+          echo "Fine-Tuning Pipeline Triggered"
+          echo "============================================"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "============================================"
+
+      - name: Check for data files
+        run: |
+          echo "Checking data directory..."
+          if [ -d "data" ]; then
+            echo "Data files found:"
+            ls -la data/
+          else
+            echo "No data directory found"
+          fi
+
+      - name: Check configuration
+        run: |
+          echo "Checking configs directory..."
+          if [ -d "configs" ]; then
+            echo "Config files found:"
+            ls -la configs/
+          else
+            echo "No configs directory found"
+          fi
+
+      - name: Generate Colab link
+        run: |
+          echo "============================================"
+          echo "To run the fine-tuning pipeline:"
+          echo ""
+          echo "1. Open Google Colab:"
+          echo "   https://colab.research.google.com/github/${{ github.repository }}/blob/main/notebooks/fine_tuning_pipeline.ipynb"
+          echo ""
+          echo "2. Select GPU runtime (T4)"
+          echo "3. Configure your DagsHub credentials"
+          echo "4. Run all cells"
+          echo "============================================"
