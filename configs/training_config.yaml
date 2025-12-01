@@ -1,0 +1,115 @@
+# =============================================================================
+# CONFIGURAÇÕES DE FINE-TUNING - MLOps Pipeline
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Configurações do Modelo
+# -----------------------------------------------------------------------------
+model:
+  # Usando Qwen (não requer autenticação)
+  name: "Qwen/Qwen2.5-1.5B"
+  
+  # Quantização para economizar memória GPU
+  quantization:
+    enabled: true
+    bits: 4  # 4-bit quantization via bitsandbytes
+    bnb_4bit_compute_dtype: "float16"
+    bnb_4bit_quant_type: "nf4"
+    bnb_4bit_use_double_quant: true
+
+# -----------------------------------------------------------------------------
+# Configurações de LoRA (Low-Rank Adaptation)
+# -----------------------------------------------------------------------------
+lora:
+  r: 16                    # Rank da matriz de adaptação
+  lora_alpha: 32           # Scaling factor
+  lora_dropout: 0.05       # Dropout para regularização
+  bias: "none"             # Tipo de bias: "none", "all", "lora_only"
+  task_type: "CAUSAL_LM"   # Tipo de tarefa
+  
+  # Módulos alvo para aplicar LoRA
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# -----------------------------------------------------------------------------
+# Configurações de Treinamento
+# -----------------------------------------------------------------------------
+training:
+  # Parâmetros básicos
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 4
+  
+  # Otimizador
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: "cosine"
+  
+  # Mixed Precision
+  fp16: false
+  bf16: true  # Usar bf16 se disponível (melhor para T4)
+  
+  # Checkpointing
+  save_strategy: "steps"
+  save_steps: 100
+  save_total_limit: 3
+  
+  # Logging
+  logging_steps: 10
+  logging_first_step: true
+  
+  # Avaliação
+  evaluation_strategy: "steps"
+  eval_steps: 100
+  
+  # Otimizações de memória
+  gradient_checkpointing: true
+  optim: "paged_adamw_32bit"
+  max_grad_norm: 0.3
+
+# -----------------------------------------------------------------------------
+# Configurações de Dataset
+# -----------------------------------------------------------------------------
+dataset:
+  # Caminho local ou nome do Hugging Face Hub
+  path: "data/sample_dataset.jsonl"
+  
+  # Colunas do dataset
+  text_column: "text"
+  instruction_column: "instruction"
+  response_column: "response"
+  
+  # Processamento
+  max_seq_length: 512
+  train_split: 0.9
+  seed: 42
+
+# -----------------------------------------------------------------------------
+# Configurações de MLflow/DagsHub
+# -----------------------------------------------------------------------------
+mlflow:
+  experiment_name: "llm-fine-tuning"
+  tracking_uri: null  # Será preenchido via variável de ambiente
+  
+  # Tags para organização
+  tags:
+    project: "fine-tuning-pipeline"
+    framework: "transformers"
+    method: "qlora"
+
+# -----------------------------------------------------------------------------
+# Configurações de Output
+# -----------------------------------------------------------------------------
+output:
+  dir: "./outputs"
+  model_name: "fine-tuned-model"
+  push_to_hub: false
+  hub_model_id: null  # Preencher se push_to_hub for true
