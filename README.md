@@ -427,7 +427,7 @@ mlflow >= 2.10.0
 
 - [ ] Modelos >7B no Colab gratuito
 - [ ] Fine-tuning de modelos fechados (GPT-4, Claude)
-- [ ] Treinamento distribuido em multiplos nos
+- [ ] Treinamento distribuido em multiplos nós
 - [ ] Pre-training do zero
 
 ---
@@ -474,7 +474,7 @@ copies of the Software...
 </p>
 
 <p align="center">
-  <b>Feitos por muitos gatinhos amassando pãozinho!</b>
+  <b>Gatos que subiram na messa durante o desenvolvimento: Kevin, Agnes, Héstia e menção honrossa para Teodora que desligou o computador e Margot que tentou comer o fio do mouse.</b>
   <br>
   <sub>Se este projeto te ajudou, deixe uma estrela no repositorio!</sub>
 </p>
@@ -486,4 +486,5 @@ copies of the Software...
   *
   <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussões</a>
 </p>
+
 
