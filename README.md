@@ -66,7 +66,7 @@
 
 ## [~] Sobre
 
-**PurrTune** e uma ferramenta de fine-tuning de LLMs que democratiza o acesso ao treinamento de modelos de linguagem. Assim como um gato que se adapta a qualquer ambiente, o PurrTune permite que voce treine modelos de bilhoes de parametros em hardware modesto - inclusive no Google Colab gratuito.
+**PurrTune** e uma ferramenta de fine-tuning de LLMs que democratiza o acesso ao treinamento de modelos de linguagem. Assim como um gato que se adapta a qualquer ambiente, o PurrTune permite que você treine modelos de bilhoes de parametros em hardware modesto - inclusive no Google Colab gratuito.
 
 > *"Se cabe na memoria, a gente treina."* =^.^=
 
@@ -74,10 +74,10 @@
 
 | Problema | Solucao PurrTune |
 |----------|------------------|
-| [$] GPUs A100 sao caras | [x] Roda em GPU T4 gratuita |
+| [$] GPUs A100 sâo caras | [x] Roda em GPU T4 gratuita |
 | [B] Modelos muito grandes | [x] Quantizacao 4-bit (QLoRA) |
 | [*] Setup complexo | [x] Pipeline pronto para usar |
-| [#] Dificil acompanhar | [x] MLflow + DagsHub integrados |
+| [#] Difícil acompanhar | [x] MLflow + DagsHub integrados |
 
 ---
 
@@ -88,7 +88,7 @@
 <td width="50%">
 
 ### [>] Performance
-- **Quantizacao 4-bit** - Reduz uso de VRAM em ~8x
+- **Quantização 4-bit** - Reduz uso de VRAM em ~8x
 - **LoRA Adapters** - Treina <1% dos parametros
 - **Gradient Checkpointing** - Otimiza memoria
 - **Multi-GPU** - Escala automaticamente
@@ -135,7 +135,7 @@
 <td align="center" width="25%">
 <img src="https://img.shields.io/badge/DEV-Developers-blue?style=for-the-badge" alt="Developers"/>
 <br><br>
-Precisa de um modelo especializado mas nao tem budget para A100s
+Precisa de um modelo especializado mas não tem budget para A100s
 </td>
 <td align="center" width="25%">
 <img src="https://img.shields.io/badge/OPS-DevOps/SRE-orange?style=for-the-badge" alt="DevOps"/>
@@ -291,7 +291,7 @@ purrtune/
 
 ---
 
-## [*] Configuracao
+## [*] Configuração
 
 ### Hiperparametros Principais
 
@@ -330,7 +330,7 @@ training:
 
 ## [?] Como Funciona
 
-### QLoRA: A Magica por Tras
+### QLoRA: A Magia por Trás
 
 O PurrTune usa **QLoRA** (Quantized Low-Rank Adaptation), combinando duas tecnicas poderosas:
 
@@ -338,7 +338,7 @@ O PurrTune usa **QLoRA** (Quantized Low-Rank Adaptation), combinando duas tecnic
 <tr>
 <td width="50%">
 
-#### [Z] Quantizacao 4-bit
+#### [Z] Quantização 4-bit
 
 Comprime os pesos do modelo de 32 bits para 4 bits, reduzindo o uso de memoria em **~8x**.
 
@@ -399,7 +399,7 @@ O projeto inclui um dataset focado em DevOps e testes automatizados:
 
 ---
 
-## [#] Requisitos Tecnicos
+## [#] Requisitos Técnicos
 
 ### Minimos
 
@@ -421,9 +421,9 @@ mlflow >= 2.10.0
 
 ---
 
-## [!] Limitacoes
+## [!] Limitações
 
-> O PurrTune e poderoso, mas nao faz milagres:
+> O PurrTune é poderoso, mas não faz milagres:
 
 - [ ] Modelos >7B no Colab gratuito
 - [ ] Fine-tuning de modelos fechados (GPT-4, Claude)
@@ -434,7 +434,7 @@ mlflow >= 2.10.0
 
 ## [+] Contribuindo
 
-Contribuicoes sao muito bem-vindas! 
+Contribuições são muito bem-vindas! 
 
 ```bash
 # Fork o projeto
@@ -444,12 +444,12 @@ git push origin feature/minha-feature
 # Abra um Pull Request
 ```
 
-### Areas que Precisam de Ajuda
+### Áreas que Precisam de Ajuda
 
 - [>] Mais datasets de exemplo para diferentes dominios
 - [>] Testes automatizados para o codigo
-- [>] Documentacao de casos de uso
-- [>] Traducao para outros idiomas
+- [>] Documentação de casos de uso
+- [>] Tradução para outros idiomas
 
 ---
 
@@ -474,7 +474,7 @@ copies of the Software...
 </p>
 
 <p align="center">
-  <b>Feito com massa de gato e massa de cafe</b>
+  <b>Feitos por muitos gatinhos amassando pãozinho!</b>
   <br>
   <sub>Se este projeto te ajudou, deixe uma estrela no repositorio!</sub>
 </p>
@@ -484,5 +484,6 @@ copies of the Software...
   *
   <a href="https://github.com/raphasparda/PurrTune/issues">[IDEA] Sugerir Feature</a>
   *
-  <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussoes</a>
+  <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussões</a>
 </p>
+
