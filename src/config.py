@@ -3,15 +3,63 @@ Configurações e constantes do projeto de Fine-Tuning.
 """
 
 import os
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass, field, fields
+from typing import Any, Dict, List, Optional, Type, TypeVar
 import yaml
+
+
+# TypeVar para métodos genéricos
+T = TypeVar('T')
+
+
+def _get_nested(data: Dict[str, Any], *keys: str, default: Any = None) -> Any:
+    """
+    Obtém valor aninhado de um dicionário de forma segura.
+    
+    Args:
+        data: Dicionário fonte
+        *keys: Chaves aninhadas (ex: 'model', 'quantization', 'bits')
+        default: Valor padrão se não encontrar
+        
+    Returns:
+        Valor encontrado ou default
+    """
+    for key in keys:
+        if isinstance(data, dict):
+            data = data.get(key, {})
+        else:
+            return default
+    return data if data != {} else default
+
+
+def _from_dict(cls: Type[T], data: Dict[str, Any], prefix: str = "") -> T:
+    """
+    Cria uma dataclass a partir de um dicionário.
+    
+    Args:
+        cls: Classe dataclass
+        data: Dicionário com dados
+        prefix: Prefixo para acessar dados aninhados
+        
+    Returns:
+        Instância da dataclass
+    """
+    if not data:
+        return cls()
+    
+    # Obter os campos da dataclass
+    field_names = {f.name for f in fields(cls)}
+    
+    # Filtrar apenas os campos válidos
+    filtered_data = {k: v for k, v in data.items() if k in field_names}
+    
+    return cls(**filtered_data)
 
 
 @dataclass
 class ModelConfig:
     """Configurações do modelo."""
-    name: str = "meta-llama/Llama-3.2-3B-Instruct"
+    name: str = "Qwen/Qwen2.5-1.5B"  # Modelo padrão (não requer autenticação)
     quantization_enabled: bool = True
     quantization_bits: int = 4
     bnb_4bit_compute_dtype: str = "float16"
@@ -103,76 +151,59 @@ class PipelineConfig:
     
     @classmethod
     def from_yaml(cls, yaml_path: str) -> "PipelineConfig":
-        """Carrega configurações de um arquivo YAML."""
+        """
+        Carrega configurações de um arquivo YAML.
+        
+        Args:
+            yaml_path: Caminho para o arquivo YAML
+            
+        Returns:
+            Instância de PipelineConfig
+        """
         with open(yaml_path, 'r', encoding='utf-8') as f:
-            config_dict = yaml.safe_load(f)
+            cfg = yaml.safe_load(f) or {}
+        
+        # Helper para acessar valores aninhados de forma segura
+        def get(section: str, key: str, default: Any = None) -> Any:
+            return cfg.get(section, {}).get(key, default)
+        
+        def get_quant(key: str, default: Any = None) -> Any:
+            return cfg.get('model', {}).get('quantization', {}).get(key, default)
         
         return cls(
             model=ModelConfig(
-                name=config_dict.get('model', {}).get('name', 'meta-llama/Llama-3.2-3B-Instruct'),
-                quantization_enabled=config_dict.get('model', {}).get('quantization', {}).get('enabled', True),
-                quantization_bits=config_dict.get('model', {}).get('quantization', {}).get('bits', 4),
-                bnb_4bit_compute_dtype=config_dict.get('model', {}).get('quantization', {}).get('bnb_4bit_compute_dtype', 'float16'),
-                bnb_4bit_quant_type=config_dict.get('model', {}).get('quantization', {}).get('bnb_4bit_quant_type', 'nf4'),
-                bnb_4bit_use_double_quant=config_dict.get('model', {}).get('quantization', {}).get('bnb_4bit_use_double_quant', True),
+                name=get('model', 'name', 'Qwen/Qwen2.5-1.5B'),
+                quantization_enabled=get_quant('enabled', True),
+                quantization_bits=get_quant('bits', 4),
+                bnb_4bit_compute_dtype=get_quant('bnb_4bit_compute_dtype', 'float16'),
+                bnb_4bit_quant_type=get_quant('bnb_4bit_quant_type', 'nf4'),
+                bnb_4bit_use_double_quant=get_quant('bnb_4bit_use_double_quant', True),
             ),
-            lora=LoRAConfig(
-                r=config_dict.get('lora', {}).get('r', 16),
-                lora_alpha=config_dict.get('lora', {}).get('lora_alpha', 32),
-                lora_dropout=config_dict.get('lora', {}).get('lora_dropout', 0.05),
-                bias=config_dict.get('lora', {}).get('bias', 'none'),
-                task_type=config_dict.get('lora', {}).get('task_type', 'CAUSAL_LM'),
-                target_modules=config_dict.get('lora', {}).get('target_modules', [
-                    "q_proj", "k_proj", "v_proj", "o_proj",
-                    "gate_proj", "up_proj", "down_proj"
-                ]),
-            ),
-            training=TrainingConfig(
-                num_train_epochs=config_dict.get('training', {}).get('num_train_epochs', 3),
-                per_device_train_batch_size=config_dict.get('training', {}).get('per_device_train_batch_size', 4),
-                per_device_eval_batch_size=config_dict.get('training', {}).get('per_device_eval_batch_size', 4),
-                gradient_accumulation_steps=config_dict.get('training', {}).get('gradient_accumulation_steps', 4),
-                learning_rate=config_dict.get('training', {}).get('learning_rate', 2e-4),
-                weight_decay=config_dict.get('training', {}).get('weight_decay', 0.01),
-                warmup_ratio=config_dict.get('training', {}).get('warmup_ratio', 0.03),
-                lr_scheduler_type=config_dict.get('training', {}).get('lr_scheduler_type', 'cosine'),
-                fp16=config_dict.get('training', {}).get('fp16', False),
-                bf16=config_dict.get('training', {}).get('bf16', True),
-                save_strategy=config_dict.get('training', {}).get('save_strategy', 'steps'),
-                save_steps=config_dict.get('training', {}).get('save_steps', 100),
-                save_total_limit=config_dict.get('training', {}).get('save_total_limit', 3),
-                logging_steps=config_dict.get('training', {}).get('logging_steps', 10),
-                logging_first_step=config_dict.get('training', {}).get('logging_first_step', True),
-                evaluation_strategy=config_dict.get('training', {}).get('evaluation_strategy', 'steps'),
-                eval_steps=config_dict.get('training', {}).get('eval_steps', 100),
-                gradient_checkpointing=config_dict.get('training', {}).get('gradient_checkpointing', True),
-                optim=config_dict.get('training', {}).get('optim', 'paged_adamw_32bit'),
-                max_grad_norm=config_dict.get('training', {}).get('max_grad_norm', 0.3),
-            ),
-            dataset=DatasetConfig(
-                path=config_dict.get('dataset', {}).get('path', 'mlabonne/guanaco-llama2-1k'),
-                text_column=config_dict.get('dataset', {}).get('text_column', 'text'),
-                instruction_column=config_dict.get('dataset', {}).get('instruction_column', 'instruction'),
-                response_column=config_dict.get('dataset', {}).get('response_column', 'response'),
-                max_seq_length=config_dict.get('dataset', {}).get('max_seq_length', 1024),
-                train_split=config_dict.get('dataset', {}).get('train_split', 0.9),
-                seed=config_dict.get('dataset', {}).get('seed', 42),
-            ),
-            mlflow=MLflowConfig(
-                experiment_name=config_dict.get('mlflow', {}).get('experiment_name', 'llm-fine-tuning'),
-                tracking_uri=config_dict.get('mlflow', {}).get('tracking_uri'),
-                tags=config_dict.get('mlflow', {}).get('tags', {
-                    "project": "fine-tuning-pipeline",
-                    "framework": "transformers",
-                    "method": "qlora"
-                }),
-            ),
-            output=OutputConfig(
-                dir=config_dict.get('output', {}).get('dir', './outputs'),
-                model_name=config_dict.get('output', {}).get('model_name', 'fine-tuned-model'),
-                push_to_hub=config_dict.get('output', {}).get('push_to_hub', False),
-                hub_model_id=config_dict.get('output', {}).get('hub_model_id'),
-            ),
+            lora=_from_dict(LoRAConfig, cfg.get('lora', {})),
+            training=_from_dict(TrainingConfig, cfg.get('training', {})),
+            dataset=_from_dict(DatasetConfig, cfg.get('dataset', {})),
+            mlflow=_from_dict(MLflowConfig, cfg.get('mlflow', {})),
+            output=_from_dict(OutputConfig, cfg.get('output', {})),
+        )
+    
+    @classmethod
+    def from_dict(cls, config_dict: Dict[str, Any]) -> "PipelineConfig":
+        """
+        Cria configuração a partir de um dicionário.
+        
+        Args:
+            config_dict: Dicionário com configurações
+            
+        Returns:
+            Instância de PipelineConfig
+        """
+        return cls(
+            model=_from_dict(ModelConfig, config_dict.get('model', {})),
+            lora=_from_dict(LoRAConfig, config_dict.get('lora', {})),
+            training=_from_dict(TrainingConfig, config_dict.get('training', {})),
+            dataset=_from_dict(DatasetConfig, config_dict.get('dataset', {})),
+            mlflow=_from_dict(MLflowConfig, config_dict.get('mlflow', {})),
+            output=_from_dict(OutputConfig, config_dict.get('output', {})),
         )
 
 
@@ -186,7 +217,7 @@ ENV_VARS = {
 }
 
 
-def get_mlflow_tracking_uri(username: str = None, repo: str = None) -> str:
+def get_mlflow_tracking_uri(username: Optional[str] = None, repo: Optional[str] = None) -> Optional[str]:
     """Gera a URI de tracking do MLflow para DagsHub."""
     username = username or ENV_VARS.get("DAGSHUB_USERNAME")
     repo = repo or ENV_VARS.get("DAGSHUB_REPO")

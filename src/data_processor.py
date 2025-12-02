@@ -3,9 +3,14 @@ Processamento de dados para Fine-Tuning de LLMs.
 """
 
 import json
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
+
 from datasets import Dataset, load_dataset
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast
+
+
+# Type alias para tokenizers
+TokenizerType = Union[AutoTokenizer, PreTrainedTokenizer, PreTrainedTokenizerFast]
 
 
 class DataProcessor:
@@ -18,7 +23,7 @@ class DataProcessor:
 
 {response}<|eot_id|>"""
 
-    PROMPT_TEMPLATE_WITH_INPUT = """<|begin_of_text|><|start_header_id|>user<|end_header_id|}
+    PROMPT_TEMPLATE_WITH_INPUT = """<|begin_of_text|><|start_header_id|>user<|end_header_id|>
 
 {instruction}
 
@@ -28,12 +33,12 @@ class DataProcessor:
 
     def __init__(
         self,
-        tokenizer: AutoTokenizer,
+        tokenizer: TokenizerType,
         max_seq_length: int = 512,
         instruction_column: str = "instruction",
         response_column: str = "response",
         input_column: str = "input",
-    ):
+    ) -> None:
         """
         Inicializa o processador de dados.
         
@@ -54,7 +59,7 @@ class DataProcessor:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
     
-    def format_prompt(self, example: Dict) -> str:
+    def format_prompt(self, example: Dict[str, str]) -> str:
         """
         Formata um exemplo no template de prompt.
         
@@ -80,7 +85,7 @@ class DataProcessor:
             response=response
         )
     
-    def tokenize_function(self, examples: Dict) -> Dict:
+    def tokenize_function(self, examples: Dict[str, Union[str, list]]) -> Dict[str, list]:
         """
         Tokeniza os exemplos.
         
@@ -126,12 +131,36 @@ class DataProcessor:
             
         Returns:
             Dataset do Hugging Face
+            
+        Raises:
+            FileNotFoundError: Se o arquivo não existir
+            json.JSONDecodeError: Se houver JSON malformado
         """
+        import os
+        
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
+        
         data = []
+        errors = []
+        
         with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
+            for line_num, line in enumerate(f, 1):
                 if line.strip():
-                    data.append(json.loads(line))
+                    try:
+                        data.append(json.loads(line))
+                    except json.JSONDecodeError as e:
+                        errors.append(f"Linha {line_num}: {e}")
+        
+        if errors:
+            error_msg = f"Erros ao parsear JSONL ({len(errors)} linhas com problema):\n"
+            error_msg += "\n".join(errors[:5])  # Mostrar até 5 erros
+            if len(errors) > 5:
+                error_msg += f"\n... e mais {len(errors) - 5} erros"
+            raise json.JSONDecodeError(error_msg, file_path, 0)
+        
+        if not data:
+            raise ValueError(f"Arquivo JSONL vazio ou sem dados válidos: {file_path}")
         
         return Dataset.from_list(data)
     
@@ -199,7 +228,7 @@ class DataProcessor:
         }
 
 
-def create_sample_dataset(output_path: str, num_samples: int = 100):
+def create_sample_dataset(output_path: str, num_samples: int = 100) -> None:
     """
     Cria um dataset de exemplo para testes.
     

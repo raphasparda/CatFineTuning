@@ -7,14 +7,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="fine-tuning-pipeline",
+    name="purrtune",
     version="1.0.0",
-    author="Seu Nome",
-    author_email="seu.email@exemplo.com",
-    description="Pipeline MLOps para Fine-Tuning de LLMs com QLoRA",
+    author="raphasparda",
+    author_email="",
+    description="PurrTune - Pipeline MLOps para Fine-Tuning de LLMs com QLoRA",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/seu-usuario/fine-tuning-pipeline",
+    url="https://github.com/raphasparda/CatFineTuning",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -32,7 +32,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "fine-tune=run_pipeline:main",
+            "purrtune=run_pipeline:main",
         ],
     },
 )
