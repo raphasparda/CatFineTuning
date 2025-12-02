@@ -11,21 +11,20 @@ from transformers import AutoTokenizer
 class DataProcessor:
     """Processador de dados para fine-tuning."""
     
-    # Template de prompt para instrucao/resposta
-    PROMPT_TEMPLATE = """### Instrucao:
+    # Template de prompt para LLaMA 3 (formato de chat)
+    PROMPT_TEMPLATE = """<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+{instruction}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+{response}<|eot_id|>"""
+
+    PROMPT_TEMPLATE_WITH_INPUT = """<|begin_of_text|><|start_header_id|>user<|end_header_id|}
+
 {instruction}
 
-### Resposta:
-{response}"""
+{input}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
-    PROMPT_TEMPLATE_WITH_INPUT = """### Instrucao:
-{instruction}
-
-### Input:
-{input}
-
-### Resposta:
-{response}"""
+{response}<|eot_id|>"""
 
     def __init__(
         self,

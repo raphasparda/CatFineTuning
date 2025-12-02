@@ -11,7 +11,7 @@ import yaml
 @dataclass
 class ModelConfig:
     """Configurações do modelo."""
-    name: str = "meta-llama/Llama-3.2-1B"
+    name: str = "meta-llama/Llama-3.2-3B-Instruct"
     quantization_enabled: bool = True
     quantization_bits: int = 4
     bnb_4bit_compute_dtype: str = "float16"
@@ -61,11 +61,11 @@ class TrainingConfig:
 @dataclass
 class DatasetConfig:
     """Configurações do dataset."""
-    path: str = "data/sample_dataset.jsonl"
+    path: str = "mlabonne/guanaco-llama2-1k"
     text_column: str = "text"
     instruction_column: str = "instruction"
     response_column: str = "response"
-    max_seq_length: int = 512
+    max_seq_length: int = 1024
     train_split: float = 0.9
     seed: int = 42
 
@@ -109,7 +109,7 @@ class PipelineConfig:
         
         return cls(
             model=ModelConfig(
-                name=config_dict.get('model', {}).get('name', 'meta-llama/Llama-3.2-1B'),
+                name=config_dict.get('model', {}).get('name', 'meta-llama/Llama-3.2-3B-Instruct'),
                 quantization_enabled=config_dict.get('model', {}).get('quantization', {}).get('enabled', True),
                 quantization_bits=config_dict.get('model', {}).get('quantization', {}).get('bits', 4),
                 bnb_4bit_compute_dtype=config_dict.get('model', {}).get('quantization', {}).get('bnb_4bit_compute_dtype', 'float16'),
@@ -150,11 +150,11 @@ class PipelineConfig:
                 max_grad_norm=config_dict.get('training', {}).get('max_grad_norm', 0.3),
             ),
             dataset=DatasetConfig(
-                path=config_dict.get('dataset', {}).get('path', 'data/sample_dataset.jsonl'),
+                path=config_dict.get('dataset', {}).get('path', 'mlabonne/guanaco-llama2-1k'),
                 text_column=config_dict.get('dataset', {}).get('text_column', 'text'),
                 instruction_column=config_dict.get('dataset', {}).get('instruction_column', 'instruction'),
                 response_column=config_dict.get('dataset', {}).get('response_column', 'response'),
-                max_seq_length=config_dict.get('dataset', {}).get('max_seq_length', 512),
+                max_seq_length=config_dict.get('dataset', {}).get('max_seq_length', 1024),
                 train_split=config_dict.get('dataset', {}).get('train_split', 0.9),
                 seed=config_dict.get('dataset', {}).get('seed', 42),
             ),
