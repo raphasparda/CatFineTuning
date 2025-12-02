@@ -2,6 +2,7 @@
 Trainer para Fine-Tuning de LLMs com QLoRA.
 """
 
+import glob
 import os
 import logging
 from typing import Dict, Optional
@@ -12,6 +13,7 @@ from transformers import (
     AutoTokenizer,
     BitsAndBytesConfig,
     TrainingArguments,
+    EarlyStoppingCallback,
 )
 from peft import (
     LoraConfig,
@@ -136,6 +138,9 @@ class FineTuningTrainer:
             optim=self.config.training.optim,
             max_grad_norm=self.config.training.max_grad_norm,
             report_to="mlflow" if MLFLOW_AVAILABLE and self.config.mlflow.tracking_uri else "none",
+            load_best_model_at_end=True,  # Carregar melhor modelo ao final
+            metric_for_best_model="eval_loss",  # Métrica para early stopping
+            greater_is_better=False,  # Menor loss é melhor
         )
     
     def load_model(self, model_name: Optional[str] = None) -> None:
@@ -191,6 +196,7 @@ class FineTuningTrainer:
         train_dataset: Dataset,
         eval_dataset: Optional[Dataset] = None,
         text_field: str = "text",
+        early_stopping_patience: Optional[int] = 3,
     ) -> None:
         """
         Configura o SFTTrainer.
@@ -199,11 +205,22 @@ class FineTuningTrainer:
             train_dataset: Dataset de treino
             eval_dataset: Dataset de avaliação (opcional)
             text_field: Nome do campo de texto no dataset
+            early_stopping_patience: Número de avaliações sem melhoria antes de parar
         """
         if self.model is None or self.tokenizer is None:
             raise RuntimeError("Modelo não carregado. Execute load_model() primeiro.")
         
         training_args = self._get_training_arguments()
+        
+        # Configurar callbacks
+        callbacks = []
+        
+        # Early stopping (apenas se tiver dataset de avaliação)
+        if eval_dataset is not None and early_stopping_patience:
+            callbacks.append(
+                EarlyStoppingCallback(early_stopping_patience=early_stopping_patience)
+            )
+            logger.info(f"Early stopping habilitado (patience={early_stopping_patience})")
         
         self.trainer = SFTTrainer(
             model=self.model,
@@ -214,13 +231,17 @@ class FineTuningTrainer:
             dataset_text_field=text_field,
             max_seq_length=self.config.dataset.max_seq_length,
             packing=False,
+            callbacks=callbacks if callbacks else None,
         )
         
         logger.info("Trainer configurado!")
     
-    def train(self) -> Dict:
+    def train(self, resume_from_checkpoint: Optional[str] = None) -> Dict:
         """
         Executa o treinamento.
+        
+        Args:
+            resume_from_checkpoint: Caminho para checkpoint para retomar treinamento
         
         Returns:
             Métricas de treinamento
@@ -228,7 +249,14 @@ class FineTuningTrainer:
         if self.trainer is None:
             raise RuntimeError("Trainer não configurado. Execute setup_trainer() primeiro.")
         
-        logger.info("Iniciando treinamento...")
+        # Detectar checkpoint automaticamente se não especificado
+        if resume_from_checkpoint is None:
+            resume_from_checkpoint = self._find_latest_checkpoint()
+        
+        if resume_from_checkpoint:
+            logger.info(f"Retomando treinamento de: {resume_from_checkpoint}")
+        else:
+            logger.info("Iniciando treinamento...")
         
         # MLflow tracking
         if MLFLOW_AVAILABLE and self.config.mlflow.tracking_uri:
@@ -243,18 +271,45 @@ class FineTuningTrainer:
                     "batch_size": self.config.training.per_device_train_batch_size,
                 })
                 
-                result = self.trainer.train()
+                result = self.trainer.train(resume_from_checkpoint=resume_from_checkpoint)
                 
                 # Log métricas finais
                 if result.metrics:
                     mlflow.log_metrics(result.metrics)
         else:
-            result = self.trainer.train()
+            result = self.trainer.train(resume_from_checkpoint=resume_from_checkpoint)
         
         self._is_trained = True
         logger.info("Treinamento concluído!")
         
         return result.metrics if result.metrics else {}
+    
+    def _find_latest_checkpoint(self) -> Optional[str]:
+        """
+        Encontra o checkpoint mais recente no diretório de output.
+        
+        Returns:
+            Caminho do checkpoint ou None
+        """
+        output_dir = self.config.output.dir
+        checkpoint_pattern = os.path.join(output_dir, "checkpoint-*")
+        checkpoints = glob.glob(checkpoint_pattern)
+        
+        if not checkpoints:
+            return None
+        
+        # Ordenar por número do checkpoint
+        def get_checkpoint_number(path: str) -> int:
+            try:
+                return int(path.split("-")[-1])
+            except ValueError:
+                return 0
+        
+        checkpoints.sort(key=get_checkpoint_number)
+        latest = checkpoints[-1]
+        
+        logger.info(f"Checkpoint encontrado: {latest}")
+        return latest
     
     def save_model(self, output_path: Optional[str] = None) -> str:
         """
@@ -364,3 +419,48 @@ class FineTuningTrainer:
         
         logger.info(f"Modelo carregado de: {model_path}")
         return trainer
+    
+    def merge_and_save(
+        self,
+        output_dir: str,
+        safe_serialization: bool = True,
+    ) -> str:
+        """
+        Faz merge dos adapters LoRA no modelo base e salva.
+        
+        Útil para inferência mais rápida em produção, pois não
+        precisa carregar os adapters separadamente.
+        
+        Args:
+            output_dir: Diretório para salvar o modelo merged
+            safe_serialization: Usar safetensors (mais seguro)
+            
+        Returns:
+            Caminho do modelo merged
+        """
+        if not self._is_trained:
+            raise ValueError("Modelo ainda não foi treinado!")
+        
+        if self.model is None:
+            raise ValueError("Modelo não está carregado!")
+        
+        logger.info("Fazendo merge dos adapters LoRA no modelo base...")
+        
+        # Merge adapters no modelo base
+        merged_model = self.model.merge_and_unload()
+        
+        # Criar diretório se não existir
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Salvar modelo merged
+        merged_model.save_pretrained(
+            output_dir,
+            safe_serialization=safe_serialization,
+        )
+        
+        # Salvar tokenizer junto
+        if self.tokenizer is not None:
+            self.tokenizer.save_pretrained(output_dir)
+        
+        logger.info(f"Modelo merged salvo em: {output_dir}")
+        return output_dir
