@@ -53,15 +53,6 @@
 
 </p>
 
-<p align="center">
-  <a href="#--sobre">Sobre</a> *
-  <a href="#--features">Features</a> *
-  <a href="#--quick-start">Quick Start</a> *
-  <a href="#--arquitetura">Arquitetura</a> *
-  <a href="#--configuracao">Configuracao</a> *
-  <a href="#--contribuindo">Contribuindo</a>
-</p>
-
 ---
 
 ## [~] Sobre
@@ -486,6 +477,7 @@ copies of the Software...
   *
   <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussões</a>
 </p>
+
 
 
 
