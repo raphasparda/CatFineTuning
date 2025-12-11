@@ -18,11 +18,11 @@
 ```
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣶⣶⣴⣦⣄⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⠿⣿⣿⣿⣿⣿⣿⣷⣀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠻⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⣏⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣿⣿⣿⡟⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⠁⠀⠀⠀
-⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀.⠉⠻⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀.⢹⣿⣿⣿⣿⣏⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀.⢀⣿⣿⣿⣿⡟⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀.⣼⣿⣿⣿⣿⣿⠁⠀⠀⠀
+⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀.⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀
 ⠈⢻⣿⣿⣶⣦⣤⣀⣴⣶⣶⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀
 ⠀⠀⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣟⠀⠀⠀⠀⠀
 ⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀
@@ -57,16 +57,16 @@
 
 ## [~] Sobre
 
-**PurrTune** e uma ferramenta de fine-tuning de LLMs que democratiza o acesso ao treinamento de modelos de linguagem. Assim como um gato que se adapta a qualquer ambiente, o PurrTune permite que você treine modelos de bilhoes de parametros em hardware modesto - inclusive no Google Colab gratuito.
+**PurrTune** é uma ferramenta de fine-tuning de LLMs que democratiza o acesso ao treinamento de modelos de linguagem. Assim como um gato que se adapta a qualquer ambiente, o PurrTune permite que você treine modelos de bilhões de parâmetros em hardware modesto - inclusive no Google Colab gratuito.
 
 > *"Se cabe na memoria, a gente treina."* =^.^=
 
 ### Por que PurrTune?
 
-| Problema | Solucao PurrTune |
+| Problema | Solução PurrTune |
 |----------|------------------|
 | [$] GPUs A100 sâo caras | [x] Roda em GPU T4 gratuita |
-| [B] Modelos muito grandes | [x] Quantizacao 4-bit (QLoRA) |
+| [B] Modelos muito grandes | [x] Quantização 4-bit (QLoRA) |
 | [*] Setup complexo | [x] Pipeline pronto para usar |
 | [#] Difícil acompanhar | [x] MLflow + DagsHub integrados |
 
@@ -286,14 +286,14 @@ purrtune/
 
 ### Hiperparametros Principais
 
-| Parametro | Padrao | Descricao |
+| Parametro | Padrão | Descrição|
 |-----------|--------|-----------|
 | `model_name` | `meta-llama/Llama-3.2-3B` | Modelo base do HuggingFace |
 | `lora_r` | `16` | Rank do LoRA (maior = mais capacidade) |
 | `lora_alpha` | `32` | Escala do LoRA |
 | `batch_size` | `4` | Tamanho do batch |
 | `learning_rate` | `2e-4` | Taxa de aprendizado |
-| `num_epochs` | `3` | Numero de epocas |
+| `num_epochs` | `3` | número de épocas |
 
 ### Exemplo de Config YAML
 
@@ -363,7 +363,7 @@ Parametros treinaveis: ~30M (1%)
 O projeto inclui um dataset focado em DevOps e testes automatizados:
 
 <details>
-<summary>[i] <b>Topicos Cobertos (25+ exemplos)</b></summary>
+<summary>[i] <b>Tópicos Cobertos (25+ exemplos)</b></summary>
 
 - [x] Testes unitarios, de integracao e end-to-end
 - [x] Configuracao de CI/CD com GitHub Actions
@@ -382,7 +382,7 @@ O projeto inclui um dataset focado em DevOps e testes automatizados:
 
 ## [^] Escalabilidade
 
-| Cenario | Hardware | Capacidade |
+| Cenário | Hardware | Capacidade |
 |---------|----------|------------|
 | [FREE] **Gratuito** | Colab T4 (16GB) | Modelos ate 3B |
 | [PRO] **Pro** | Colab A100 (40GB) | Modelos ate 7B |
@@ -392,13 +392,13 @@ O projeto inclui um dataset focado em DevOps e testes automatizados:
 
 ## [#] Requisitos Técnicos
 
-### Minimos
+### Mínimos
 
 - Python 3.10+
 - GPU com 16GB+ VRAM (T4, V100, A100)
 - CUDA 11.8+
 
-### Dependencias
+### Dependências
 
 ```txt
 transformers >= 4.40.0
@@ -444,7 +444,7 @@ git push origin feature/minha-feature
 
 ---
 
-## [L] Licenca
+## [L] Licença
 
 ```
 MIT License
@@ -477,6 +477,7 @@ copies of the Software...
   *
   <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussões</a>
 </p>
+
 
 
 
