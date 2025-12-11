@@ -458,7 +458,7 @@ git push origin feature/minha-feature
 ```
 MIT License
 
-Copyright (c) 2024 PurrTune
+Copyright (c) 2025 PurrTune
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -486,5 +486,6 @@ copies of the Software...
   *
   <a href="https://github.com/raphasparda/PurrTune/discussions">[CHAT] Discussões</a>
 </p>
+
 
 
